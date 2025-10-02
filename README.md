@@ -31,8 +31,9 @@ These test have been implemented using `googletest`.
     - [x] multiplication
     - [x] division
     - [x] exponentiation
-    - [ ] modulo, logarithmus, sin, cos, tan, ...
-  - [ ] add brackets for encapsulation of terms
+    - [x] modulo
+    - future functionality: logarithmus, sin, cos, tan, ...
+  - [x] add brackets for encapsulation of terms
 - [ ] provide build system for demos and library
   - [x] basic build structure has been established
     - calculator is header-only currently
