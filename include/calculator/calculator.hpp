@@ -26,6 +26,7 @@ public:
         std::string expr = expression;                                      // contains the trimmed expression
         expr.erase(std::remove(expr.begin(), expr.end(), ' '), expr.end()); // remove all spaces
 
+        // NOTE: ranges::count from c++20 are not fully supported yet by at least g++14
         // auto num_open_brackets = std::ranges::count(expr, "(");
         // auto num_close_brackets = std::ranges::count(expr, ")");
 
@@ -35,14 +36,10 @@ public:
         int num_open_brackets = static_cast<int>(n);
         int num_close_brackets = static_cast<int>(m);
 
+        // TODO: only guarantees correct number of brackets, not correct placement
         if (num_open_brackets != num_close_brackets)
         {
             throw std::invalid_argument("Mismatched number of opening and closing brackets");
-        }
-
-        if (expr.find('(') == 0 && expr.find(')') == expr.size() - 1)
-        {
-            expr = expr.substr(1, expr.size() - 2); // remove outer brackets
         }
 
         return evaluate<T>(expr);
@@ -50,13 +47,38 @@ public:
 
 private:
     template <typename T>
-    T evaluate(const std::string &expr)
+    T evaluate(std::string &expr)
     {
         const std::vector<char> operators{'+', '-', '*', '/', '^'};
 
+        if (expr.find('(') == 0 && expr.find(')') == expr.size() - 1)
+        {
+            expr = expr.substr(1, expr.size() - 2); // remove outer brackets
+        }
+
+        std::string blacked_expr = expr;
+        int bracket_level = 0;
+        for (size_t i = 0; i < blacked_expr.size(); ++i)
+        {
+            if (blacked_expr[i] == '(')
+            {
+                ++bracket_level;
+            }
+            else if (blacked_expr[i] == ')')
+            {
+                --bracket_level;
+            }
+            if (bracket_level > 0)
+            {
+                blacked_expr[i] = '@';
+            }
+        }
+
+        assert(blacked_expr.size() == expr.size());
+
         for (char op : operators)
         {
-            auto pos = expr.find(op);
+            auto pos = blacked_expr.find(op);
             if (pos != std::string::npos)
             {
                 const char operator_char = expr[pos];
