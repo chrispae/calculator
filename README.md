@@ -23,16 +23,19 @@ These test have been implemented using `googletest`.
 ## ToDo
 
 - [ ] implement calculator functionality
-  - [ ] provide handbuilt heap implementation to store all terms
+  - [ ] ~~provide handbuilt heap implementation to store all terms~~
+    - creating tree only implicit through recursive term splitting
   - [ ] add operators
-    - [ ] addition
-    - [ ] substraction
-    - [ ] multiplication
-    - [ ] division
-    - [ ] exponentiation
+    - [x] addition
+    - [x] substraction
+    - [x] multiplication
+    - [x] division
+    - [x] exponentiation
     - [ ] modulo, logarithmus, sin, cos, tan, ...
   - [ ] add brackets for encapsulation of terms
 - [ ] provide build system for demos and library
   - [x] basic build structure has been established
+    - calculator is header-only currently
 - [ ] add tests to ensure correct calculations
   - [x] dummy test with `googletest` has been established
+  - [x] test for basic calculations have been added
