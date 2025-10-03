@@ -14,6 +14,8 @@ TEST(SimpleOperators, TwoNumbers)
     EXPECT_EQ(res4, 7);
     auto res5 = calc.solve(" 3^4");
     EXPECT_EQ(res5, 81);
+    auto res6 = calc.solve(" 10 % 3");
+    EXPECT_EQ(res6, 1);
 }
 
 TEST(SimpleOperators, TwoDoubleNumbers)
