@@ -8,6 +8,8 @@
 #include <cmath>
 #include <algorithm>
 #include <sstream>
+#include <cassert>
+#include <type_traits>
 
 class Calculator
 {
@@ -46,6 +48,44 @@ public:
     }
 
 private:
+    template <typename T>
+    T apply_operator(std::string &left_str, std::string &right_str, char op)
+    {
+        switch (op)
+        {
+        case '+':
+            return evaluate<T>(left_str) + evaluate<T>(right_str);
+        case '-':
+            /*
+            all signs of the the right-hand side have to be inverted
+            this is required since we implicitly apply the associative law,
+            requiring the factor -1 to be pulled into the right-hand side
+             */
+            std::replace(right_str.begin(), right_str.end(), '-', '@');
+            std::replace(right_str.begin(), right_str.end(), '+', '-');
+            std::replace(right_str.begin(), right_str.end(), '@', '+');
+            return evaluate<T>(left_str) - evaluate<T>(right_str);
+        case '*':
+            return evaluate<T>(left_str) * evaluate<T>(right_str);
+        case '/':
+            return evaluate<T>(left_str) / evaluate<T>(right_str);
+        case '%':
+            if constexpr (std::is_integral<T>::value)
+            // modulo operator only defined for integer types
+            {
+                return evaluate<T>(left_str) % evaluate<T>(right_str);
+            }
+            else
+            {
+                throw std::invalid_argument("Modulo operator is only supported for integer types");
+            }
+        case '^':
+            return static_cast<T>(std::pow(evaluate<T>(left_str), evaluate<T>(right_str)));
+        default:
+            throw std::invalid_argument("Unsupported operator");
+        }
+    }
+
     template <typename T>
     T evaluate(std::string &expr)
     {
@@ -96,29 +136,7 @@ private:
                 std::string left_str = expr.substr(0, pos);
                 std::string right_str = expr.substr(pos + 1);
 
-                switch (operator_char)
-                {
-                case '+':
-                    return evaluate<T>(left_str) + evaluate<T>(right_str);
-                case '-':
-                    /*
-                    all signs of the the right-hand side have to be inverted
-                    this is required since we implicitly apply the associative law,
-                    requiring the factor -1 to be pulled into the right-hand side
-                     */
-                    std::replace(right_str.begin(), right_str.end(), '-', '@');
-                    std::replace(right_str.begin(), right_str.end(), '+', '-');
-                    std::replace(right_str.begin(), right_str.end(), '@', '+');
-                    return evaluate<T>(left_str) - evaluate<T>(right_str);
-                case '*':
-                    return evaluate<T>(left_str) * evaluate<T>(right_str);
-                case '/':
-                    return evaluate<T>(left_str) / evaluate<T>(right_str);
-                case '^':
-                    return static_cast<T>(std::pow(evaluate<T>(left_str), evaluate<T>(right_str)));
-                default:
-                    throw std::invalid_argument("Unsupported operator");
-                }
+                return apply_operator<T>(left_str, right_str, operator_char);
             }
         }
         return static_cast<T>(std::stoi(expr));
