@@ -9,8 +9,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(hello_test test_calculator.cpp)
-target_link_libraries(hello_test GTest::gtest_main)
+add_executable(calculator_test test_calculator.cpp)
+target_link_libraries(calculator_test GTest::gtest_main)
 
 include(GoogleTest) # required to use gtest_discover_tests
-gtest_discover_tests(hello_test)
+gtest_discover_tests(calculator_test)
