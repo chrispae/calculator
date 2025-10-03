@@ -49,37 +49,48 @@ private:
     template <typename T>
     T evaluate(std::string &expr)
     {
-        const std::vector<char> operators{'+', '-', '*', '/', '^'};
+        const std::vector<char> operators{'+', '-', '*', '/', '%', '^'}; // order of precedence from low to high
 
-        if (expr.find('(') == 0 && expr.find(')') == expr.size() - 1)
+        if (expr[0] == '(' && expr[expr.size() - 1] == ')')
+        // use explicit element access instead of str.find, since find yields the first occurrence, not allowing multiple brackets
         {
-            expr = expr.substr(1, expr.size() - 2); // remove outer brackets
+            // remove surrounding brackets
+            expr = expr.substr(1, expr.size() - 2);
         }
 
         std::string blacked_expr = expr;
-        int bracket_level = 0;
+        int bracket_level{0};
+        const char replacement_char = '@';
         for (size_t i = 0; i < blacked_expr.size(); ++i)
         {
             if (blacked_expr[i] == '(')
+            // first open bracket will NOT be replaced
             {
-                ++bracket_level;
+                if (++bracket_level > 1)
+                {
+                    blacked_expr[i] = replacement_char;
+                }
+                continue;
             }
             else if (blacked_expr[i] == ')')
             {
                 --bracket_level;
             }
             if (bracket_level > 0)
+            // replace content of highest level brackets
             {
-                blacked_expr[i] = '@';
+                blacked_expr[i] = replacement_char;
             }
         }
 
-        assert(blacked_expr.size() == expr.size());
+        assert(blacked_expr.size() == expr.size()); // invariant
 
         for (char op : operators)
+        // check for occuring operators in order of precedence from low to high
         {
             auto pos = blacked_expr.find(op);
             if (pos != std::string::npos)
+            // operator has been found
             {
                 const char operator_char = expr[pos];
                 std::string left_str = expr.substr(0, pos);
@@ -92,7 +103,7 @@ private:
                 case '-':
                     /*
                     all signs of the the right-hand side have to be inverted
-                    this is required since we implicitly apply the associative law, 
+                    this is required since we implicitly apply the associative law,
                     requiring the factor -1 to be pulled into the right-hand side
                      */
                     std::replace(right_str.begin(), right_str.end(), '-', '@');
