@@ -8,6 +8,8 @@
 #include <cmath>
 #include <algorithm>
 #include <sstream>
+#include <cassert>
+#include <type_traits>
 
 class Calculator
 {
@@ -68,7 +70,7 @@ private:
         case '/':
             return evaluate<T>(left_str) / evaluate<T>(right_str);
         case '%':
-            if constexpr (std::is_same_v<T, int>)
+            if constexpr (std::is_integral<T>::value)
             // modulo operator only defined for integer types
             {
                 return evaluate<T>(left_str) % evaluate<T>(right_str);
