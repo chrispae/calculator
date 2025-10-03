@@ -20,6 +20,8 @@ TEST(SimpleOperators, TwoNumbers)
     EXPECT_EQ(res3, 42);
     auto res4 = calc.solve(" 63 / 9");
     EXPECT_EQ(res4, 7);
+    auto res5 = calc.solve(" 3^4");
+    EXPECT_EQ(res5, 81);
 }
 
 TEST(SimpleOperators, MoreNumbers)
@@ -48,4 +50,6 @@ TEST(SimpleOperators, Brackets)
     EXPECT_EQ(res4, 12);
     auto res5 = calc.solve(" (10 + 63 / 9 - 5)");
     EXPECT_EQ(res5, 12);
+    auto res6 = calc.solve("(2 * (3 + 5))^2");
+    EXPECT_EQ(res6, 256);
 }
